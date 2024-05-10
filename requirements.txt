@@ -16,3 +16,4 @@ torch
 numpy
 opencv-python-headless
 pandas
+PILLOW
