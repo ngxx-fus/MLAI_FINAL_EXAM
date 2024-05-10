@@ -39,6 +39,62 @@
       "shape_type": "polygon",
       "flags": {},
       "mask": null
+    },
+    {
+      "label": "LAN_HIEN_TAI",
+      "points": [
+        [
+          917.75,
+          524.5
+        ],
+        [
+          237.751246882793,
+          1023.0
+        ],
+        [
+          1850.25,
+          1019.5
+        ],
+        [
+          1197.75,
+          522.0
+        ]
+      ],
+      "group_id": null,
+      "description": "",
+      "shape_type": "polygon",
+      "flags": {},
+      "mask": null
+    },
+    {
+      "label": "LAN_PHAI_0",
+      "points": [
+        [
+          1207.75,
+          532.0
+        ],
+        [
+          1852.75,
+          1022.0
+        ],
+        [
+          2044.0,
+          1019.5
+        ],
+        [
+          2029.0,
+          698.25
+        ],
+        [
+          1401.5,
+          515.75
+        ]
+      ],
+      "group_id": null,
+      "description": "",
+      "shape_type": "polygon",
+      "flags": {},
+      "mask": null
     }
   ],
   "imagePath": "..\\IMG\\stuttgart_01_000000_004034_leftImg8bit.png",
