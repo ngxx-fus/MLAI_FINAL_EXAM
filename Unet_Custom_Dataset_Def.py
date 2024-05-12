@@ -1,4 +1,3 @@
-import Unet_Def
 import numpy as np
 import cv2
 import matplotlib as plt
@@ -108,3 +107,14 @@ class UnNormalize(object):
     
 unorm = UnNormalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
 
+#------------------ Declare dataset  --------------------
+train_dataset = cityScapeDataset(root_path, train_txt, train_transform)
+test_dataset = cityScapeDataset(root_path, test_txt, test_transformt)
+
+# # test dataset
+# img, mask = train_dataset.__getitem__(2)
+# plt.subplot(1,2,1)
+# plt.imshow(unorm(img).permute(1,2,0))
+# plt.subplot(1,2,2)
+# plt.imshow(mask)
+# plt.show()
