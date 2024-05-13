@@ -1,43 +1,24 @@
 #------------- import custom libs ---------------------
-from Unet_Custom_Dataset_Def import train_dataset
-from Unet_Custom_Dataset_Def import test_dataset
-from Unet_Custom_Dataset_Def import original_size
-from Unet_Custom_Dataset_Def import train_size
-from Unet_Custom_Dataset_Def import root_path
-from Unet_Custom_Dataset_Def import img_path
-from Unet_Custom_Dataset_Def import mask_path
-from Unet_Custom_Dataset_Def import train_txt
-from Unet_Custom_Dataset_Def import test_txt
-from Unet_Mesure_Def         import accuracy_function
-from Unet_Mesure_Def         import AverageMeter
-from Unet_Def                import Unet_Model
+from Dataset_Def import train_dataset
+from Dataset_Def import test_dataset
+from Mesure_Def  import accuracy_function
+from Mesure_Def  import AverageMeter
+from Model_Def   import Unet_Model
 
 #------------- import built-in libs ---------------------
-import numpy as np
-import cv2
 import matplotlib as plt
 import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-from  torch.utils.data import Dataset, DataLoader
 import torchmetrics
-from torchmetrics import Dice, JaccardIndex #IOU
-import segmentation_models_pytorch as smp
-import albumentations as A
-# to convert np.array to torch.tensor
-from albumentations.pytorch import ToTensorV2
-# others
-import os
 # processing effecting
 from tqdm import tqdm
-# read all images in a folder
-from glob import glob
+
 
 
 #------------------ Declare my_ss_model --------------------
 # my_ss_model
-n_classes = 4
+n_classes = 21
 # my_ss_model = Unet_Model(1).to(device) # GPU trainning
 my_ss_model = Unet_Model(n_classes)  # CPU trainning
 
@@ -48,7 +29,7 @@ device = "cpu"
 print("device: ", device)
 
 #------------------ Declare data loader (not dataset!) --------------------
-batch_size = 8
+batch_size = 4
 n_workers = 0
 print("num_workers: ", n_workers)
 trainloader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size,
@@ -58,13 +39,13 @@ testloader = torch.utils.data.DataLoader(test_dataset, batch_size=batch_size,
 
 
 #------------- loss_function ---------------------
-criterion = nn.BCEWithLogitsLoss()
+criterion = nn.CrossEntropyLoss()
 
 #------------- optimizer_method ---------------------
 optimizer = torch.optim.Adam(my_ss_model.parameters(), lr=1e-4)
 #------------- metrics ---------------------
-dice_function = torchmetrics.Dice(num_classes=n_classes+1, average="macro").to(device)
-iou_function = torchmetrics.JaccardIndex(num_classes=n_classes+1, task="binary", average="macro").to(device)
+dice_function = torchmetrics.Dice(num_classes=n_classes, average="macro").to(device)
+iou_function = torchmetrics.JaccardIndex(num_classes=n_classes, task="multiclass", average="macro").to(device)
 
 #------------- meter ---------------------
 accurancy_meter = AverageMeter()
@@ -87,19 +68,18 @@ for ep in range(1, 1+n_eps):
         print("batch_id: ", batch_id)
         n = x.shape[0]
         x = x.to(device).float()
-        y = y.to(device).float()
+        y = y.to(device).long()
         optimizer.zero_grad()
         print("Computing predict output!")
-        y_hat = my_ss_model(x)
-        y_hat = y_hat.squeeze() # -> logit (-vc, +vc)
+        y_hat = my_ss_model(x) # (B, C, H, W)
         print("Computing lost!")
-        loss = criterion(y_hat, y)
+        loss = criterion(y_hat, y) #(B, C, H, W) >< (B, H, W)
         print("Optimizing!")
         loss.backward()
         optimizer.step()
         
         with torch.no_grad():
-            y_hat_mask = y_hat.sigmoid().round().long() # -> mask (0, 1)
+            y_hat_mask = y_hat.argmax(dim=1).squeeze() # (B, C, H, W) -> (B, 1, H, W) -> (B,H,W)
             dice_score = dice_function(y_hat_mask, y.long())
             iou_score = iou_function(y_hat_mask, y.long())
             accuracy = accuracy_function(y_hat_mask, y.long())

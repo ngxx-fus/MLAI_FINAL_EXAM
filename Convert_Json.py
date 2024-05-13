@@ -4,23 +4,57 @@ import cv2
 import matplotlib as plt
 from PIL import Image
 
-root_path        = r"."
-masks_path       = r".\MASK"
-masks_review_path = r".\MASK_REVIEW"
-json_files_path  = r".\JSON_LABELME"
+root_path        = r"D:\DOC\23-24_HK02\MLAI\CityScape_Dataset"
+masks_path       = root_path + r"\MASK"
+masks_review_path = root_path + r"\MASK_REVIEW"
+json_files_path  = root_path + r"\JSON_LABELME"
 json_files_list  = os.listdir(json_files_path)
+
+# print list files
+print("Exporting list_img!")
+with open(root_path+r"\IMG_LIST.txt", "w") as file:
+    for json_filename in json_files_list:
+        print("Saved filename: " + json_filename)
+        file.write(json_filename.replace("json","png"))
+        file.write("\n")
+print("Done!\nConverting to image...\n")
 
 height = 1024
 width = 2048
 
 Label_Class = {
-    "void" : 0,
-    "DUONG_DI" : 1,
+    "VOID" : 0,
+    "DUONG_DI"  : 1,
     "LAN_HIEN_TAI" : 2,
     "LAN_TRAI_0" : 3,
     "LAN_PHAI_0" : 4,
-    "DUONG_CHUYEN_LAN" : 5
 }
+
+
+COLORMAP = [
+    [0, 0, 0],
+    [128, 0, 0],
+    [0, 128, 0],
+    [128, 128, 0],
+    [0, 0, 128],
+    [128, 0, 128],
+    [0, 128, 128],
+    [128, 128, 128],
+    [64, 0, 0],
+    [192, 0, 0],
+    [64, 128, 0],
+    [192, 128, 0],
+    [64, 0, 128],
+    [192, 0, 128],
+    [64, 128, 128],
+    [192, 128, 128],
+    [0, 64, 0],
+    [128, 64, 0],
+    [0, 192, 0],
+    [128, 192, 0],
+    [0, 64, 128],
+]
+
 
 for json_filename in json_files_list:
     # for each json file in the folder, open it
@@ -69,17 +103,13 @@ for json_filename in json_files_list:
             # print(ith_label, labels_list[ith_label], Label_Class.get(labels_list[ith_label]))
             for i in range(width):
                 for j in range(height):
+                    if mask_img[j, i] != 0 and labels_list[ith_label] == "DUONG_DI":
+                        continue
                     if cv2.pointPolygonTest(points_list[ith_label], (i, j), False) > 0:
-                        if Label_Class.get(labels_list[ith_label]) == 1:
-                            mask_review_img[j,i, 0] += 50
-                            mask_review_img[j,i, 1] += 50
-                            mask_review_img[j,i, 2] += 50
-                        if Label_Class.get(labels_list[ith_label]) == 2:
-                            mask_review_img[j,i,0] += 100
-                        if Label_Class.get(labels_list[ith_label]) == 3:
-                            mask_review_img[j,i,1] += 100
-                        if Label_Class.get(labels_list[ith_label]) == 4:
-                            mask_review_img[j,i,2] += 100
+                        ID_LABEL_CLASS = Label_Class.get(labels_list[ith_label])
+                        mask_review_img[j, i, 0] += COLORMAP[ID_LABEL_CLASS][0]
+                        mask_review_img[j, i, 1] += COLORMAP[ID_LABEL_CLASS][1]
+                        mask_review_img[j, i, 2] += COLORMAP[ID_LABEL_CLASS][2]
                         mask_img[j, i] = Label_Class.get(labels_list[ith_label])
 
         # save mask image
@@ -87,4 +117,4 @@ for json_filename in json_files_list:
         print("Mask image saved at: ", masks_path + "\\" + json_filename.replace("json", "png"))
         cv2.imwrite( masks_review_path + "\\" + json_filename.replace("json", "png"), mask_review_img)
         print("Mask review image saved at: ", masks_review_path + "\\" + json_filename.replace("json", "png"))
-        
+print("Converted to images!")
