@@ -1,6 +1,7 @@
 #------------- import custom libs ---------------------
 from Dataset_Def import train_dataset
 from Dataset_Def import test_dataset
+from Dataset_Def import root_path
 from Mesure_Def  import accuracy_function
 from Mesure_Def  import AverageMeter
 from Model_Def   import Unet_Model
@@ -93,4 +94,4 @@ for ep in range(1, 1+n_eps):
     #     ep, train_loss_meter.avg, accurancy_meter.avg, iou_meter.avg, dice_meter.avg
     # ))
 #    if ep >= 25:
-#        torch.save(my_ss_model.state_dict(), "/content/model_ep_{}.pth".format(ep))
+    torch.save(my_ss_model.state_dict(), root_path+"\\model_ep_{}.pth".format(ep))

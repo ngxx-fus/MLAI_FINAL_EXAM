@@ -4,20 +4,23 @@ import cv2
 import matplotlib as plt
 from PIL import Image
 
-root_path        = r"D:\DOC\23-24_HK02\MLAI\CityScape_Dataset"
-masks_path       = root_path + r"\MASK"
-masks_review_path = root_path + r"\MASK_REVIEW"
-json_files_path  = root_path + r"\JSON_LABELME"
+root_path        = r"D:/DOC/23-24_HK02/MLAI/CityScape_Dataset"
+masks_path       = root_path + r"/MASK"
+masks_review_path = root_path + r"/MASK_REVIEW"
+json_files_path  = root_path + r"/JSON_LABELME"
 json_files_list  = os.listdir(json_files_path)
+
+start_index      = 250
+end_index        = len(json_files_list)
 
 # print list files
 print("Exporting list_img!")
-with open(root_path+r"\IMG_LIST.txt", "w") as file:
+with open(root_path+r"/IMG_LIST.txt", "w") as file:
     for json_filename in json_files_list:
         print("Saved filename: " + json_filename)
         file.write(json_filename.replace("json","png"))
-        file.write("\n")
-print("Done!\nConverting to image...\n")
+        file.write("/n")
+print("Done!/n/nConverting to image...")
 
 height = 1024
 width = 2048
@@ -56,9 +59,11 @@ COLORMAP = [
 ]
 
 
-for json_filename in json_files_list:
+for ith_json_filename in range(start_index, end_index):
     # for each json file in the folder, open it
-    with open(json_files_path + "\\" + json_filename) as json_file:
+    json_filename = json_files_list[ith_json_filename]
+    print("/nConverting {} to mask!".format(json_filename))
+    with open(json_files_path + "/" + json_filename) as json_file:
         # load data in json file
         json_data = json.load(json_file)
         # the data contains multi label, just focus to "shapes"
@@ -107,14 +112,16 @@ for json_filename in json_files_list:
                         continue
                     if cv2.pointPolygonTest(points_list[ith_label], (i, j), False) > 0:
                         ID_LABEL_CLASS = Label_Class.get(labels_list[ith_label])
-                        mask_review_img[j, i, 0] += COLORMAP[ID_LABEL_CLASS][0]
-                        mask_review_img[j, i, 1] += COLORMAP[ID_LABEL_CLASS][1]
-                        mask_review_img[j, i, 2] += COLORMAP[ID_LABEL_CLASS][2]
+                        if ID_LABEL_CLASS is None:
+                            continue
+                        mask_review_img[j, i, 0] += COLORMAP[ID_LABEL_CLASS][ 0 ]
+                        mask_review_img[j, i, 1] += COLORMAP[ID_LABEL_CLASS][ 1 ]
+                        mask_review_img[j, i, 2] += COLORMAP[ID_LABEL_CLASS][ 2 ]
                         mask_img[j, i] = Label_Class.get(labels_list[ith_label])
 
         # save mask image
-        cv2.imwrite( masks_path + "\\" + json_filename.replace("json", "png"), mask_img)
-        print("Mask image saved at: ", masks_path + "\\" + json_filename.replace("json", "png"))
-        cv2.imwrite( masks_review_path + "\\" + json_filename.replace("json", "png"), mask_review_img)
-        print("Mask review image saved at: ", masks_review_path + "\\" + json_filename.replace("json", "png"))
+        cv2.imwrite( masks_path + "/" + json_filename.replace("json", "png"), mask_img)
+        print("Mask image saved at: ", masks_path + "/" + json_filename.replace("json", "png"))
+        cv2.imwrite( masks_review_path + "/" + json_filename.replace("json", "png"), mask_review_img)
+        print("Mask review image saved at: ", masks_review_path + "/" + json_filename.replace("json", "png"))
 print("Converted to images!")
