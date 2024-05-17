@@ -1,10 +1,13 @@
+# SOURCE: https://github.com/hszhao/semseg/tree/master/model
+#---------------------- LOCAL FUNC AND VAR ----------------------
+from Dataset_Def import root_path
+
+#---------------------- BUILT-IN FUNC AND VAR ----------------------
 import torch
 import torch.nn as nn
 
-# SOURCE: https://github.com/hszhao/semseg/tree/master/model
-
 #---------------------- WEIGHTS PATH DEFINATION ----------------------
-weights_path = r".\Model_Weights"
+weights_path = root_path + r"/Model_Weights"
 
 
 #---------------------- BACKBONE DEFINATION ----------------------
@@ -155,7 +158,7 @@ def resnet50(pretrained=True, **kwargs):
     model = ResNet(Bottleneck, [3, 4, 6, 3], **kwargs)
     if pretrained:
         # model.load_state_dict(model_zoo.load_url(model_urls['resnet50']))
-        model_path = weights_path + r'\resnet50_v2.pth'
+        model_path = weights_path + r'/resnet50_v2.pth'
         # model.load_state_dict(torch.load(model_path), strict=False)
         model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
     return model

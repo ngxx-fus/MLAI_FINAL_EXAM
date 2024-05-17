@@ -67,7 +67,7 @@ class PPM(nn.Module):
         return torch.cat(out, 1)
 
 class PSPNet(nn.Module):
-    def __init__(self, layers=50, bins=(1, 2, 3, 6), dropout=0.1, classes=2, zoom_factor=8, use_ppm=True, criterion=nn.CrossEntropyLoss(ignore_index=255), pretrained=True):
+    def __init__(self, layers=50, bins=(1, 2, 3, 6), dropout=0.1, classes=29, zoom_factor=8, use_ppm=True, criterion=nn.CrossEntropyLoss(ignore_index=255), pretrained=True):
         super(PSPNet, self).__init__()
         assert layers in [50, 101, 152]
         assert 2048 % len(bins) == 0
@@ -168,7 +168,7 @@ def accuracy_function(preds, targets):
 device = torch.device('cpu')
 
 #load data
-batch_size = 8
+batch_size = 4
 n_workers = 0
 
 trainloader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size,

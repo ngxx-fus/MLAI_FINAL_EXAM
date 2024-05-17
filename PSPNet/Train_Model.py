@@ -28,7 +28,7 @@ import pandas as pd
 from torchvision.io import read_image
 
 #---------------------- WEIGHTS PATH DEFINATION ----------------------
-weights_path = r".\Model_Weights"
+# weights_path = r"./Model_Weights"
 
 #---------------------- TRAIN MODEL DEFINATION ----------------------
 
