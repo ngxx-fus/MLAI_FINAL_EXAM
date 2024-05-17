@@ -70,7 +70,13 @@ The model was built for 21 classes (Labels), but in this project we only use **f
 
 
 ## The result 
-### In train_dataset:
+
+
+
+### In train_dataset (20 epoches):
+![image](https://github.com/ngxx-fus/MLAI_FINAL_EXAM/assets/75427876/3210348c-7724-4240-8d9f-8018fad88ff2)
+
+
 > - Train loss = 0.05682641424238682
 > - Accuracy = 0.9867874002456665
 > - IoU = 0.9490965843200684
